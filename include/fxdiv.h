@@ -108,8 +108,36 @@ static inline struct fxdiv_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 			__asm__("BSRL %[d_minus_1], %[l_minus_1]"
 				: [l_minus_1] "=r" (l_minus_1)
 				: [d_minus_1] "r" (d - 1));
-		#else
+		#elif defined(__GNUC__)
 			const uint32_t l_minus_1 = 31 - __builtin_clz(d - 1);
+		#else
+			/* Based on Algorithm 2 from Hacker's delight */
+
+			uint32_t l_minus_1 = 0;
+			uint32_t x = d - 1;
+			uint32_t y = x >> 16;
+			if (y != 0) {
+				l_minus_1 += 16;
+				x = y;
+			}
+			y = x >> 8;
+			if (y != 0) {
+				l_minus_1 += 8;
+				x = y;
+			}
+			y = x >> 4;
+			if (y != 0) {
+				l_minus_1 += 4;
+				x = y;
+			}
+			y = x >> 2;
+			if (y != 0) {
+				l_minus_1 += 2;
+				x = y;
+			}
+			if ((x & 2) != 0) {
+				l_minus_1 += 1;
+			}
 		#endif
 		const uint32_t u_hi = (UINT32_C(2) << (uint32_t) l_minus_1) - d;
 
@@ -166,9 +194,44 @@ static inline struct fxdiv_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 			__asm__("BSRQ %[d_minus_1], %[l_minus_1]"
 				: [l_minus_1] "=r" (l_minus_1)
 				: [d_minus_1] "r" (d - 1));
-		#else
+		#elif defined(__GNUC__)
 			const uint32_t l_minus_1 = 63 - __builtin_clzll(d - 1);
 			const uint32_t nlz_d = __builtin_clzll(d);
+		#else
+			/* Based on Algorithm 2 from Hacker's delight */
+			const uint64_t d_minus_1 = d - 1;
+			const uint32_t d_is_power_of_2 = (d & d_minus_1) == 0;
+			uint64_t l_minus_1 = 0;
+			uint32_t x = d_minus_1;
+			uint32_t y = d_minus_1 >> 32;
+			if (y != 0) {
+				l_minus_1 += 32;
+				x = y;
+			}
+			y = x >> 16;
+			if (y != 0) {
+				l_minus_1 += 16;
+				x = y;
+			}
+			y = x >> 8;
+			if (y != 0) {
+				l_minus_1 += 8;
+				x = y;
+			}
+			y = x >> 4;
+			if (y != 0) {
+				l_minus_1 += 4;
+				x = y;
+			}
+			y = x >> 2;
+			if (y != 0) {
+				l_minus_1 += 2;
+				x = y;
+			}
+			if ((x & 2) != 0) {
+				l_minus_1 += 1;
+			}
+			const uint32_t nlz_d = (l_minus_1 ^ UINT32_C(0x3F)) - d_is_power_of_2;
 		#endif
 		uint64_t u_hi = (UINT64_C(2) << (uint32_t) l_minus_1) - d;
 
