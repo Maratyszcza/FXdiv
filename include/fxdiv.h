@@ -2,10 +2,10 @@
 #ifndef FXDIV_H
 #define FXDIV_H
 
-#if defined(__cplusplus)
+#if defined(__cplusplus) && (__cplusplus >= 201103L)
 	#include <cstddef>
 	#include <cstdint>
-#elif defined(__STDC__) && defined(__STDC_VERSION__)
+#elif !defined(__OPENCL_VERSION__)
 	#include <stddef.h>
 	#include <stdint.h>
 #endif
