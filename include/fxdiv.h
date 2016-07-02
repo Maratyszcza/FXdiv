@@ -43,7 +43,7 @@ static inline uint64_t fxdiv_mulhi_uint64_t(uint64_t a, uint64_t b) {
 	return (uint64_t) __umul64hi((unsigned long long) a, (unsigned long long) b);
 #elif defined(_MSC_VER) && defined(_M_X64)
 	return (uint64_t) __umulh((unsigned __int64) a, (unsigned __int64) b);
-#elif defined(__GNUC__) && (defined(__x86_64__) || defined(__aarch64__) || defined(__ppc64__))
+#elif defined(__GNUC__) && defined(__SIZEOF_INT128__)
 	return (uint64_t) (((((unsigned __int128) a) * ((unsigned __int128) b))) >> 64);
 #else
 	const uint32_t a_lo = (uint32_t) a;
@@ -152,7 +152,7 @@ static inline struct fxdiv_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 		uint64_t u_hi = (UINT64_C(2) << (uint32_t) l_minus_1) - d;
 
 		/* Division of 128-bit number q_hi:UINT64_C(0) by 64-bit number d, 64-bit quotient output q */
-		#if defined(__GNUC__) && (defined(__x86_64__) || defined(__aarch64__) || defined(__ppc64__))
+		#if defined(__GNUC__) && defined(__SIZEOF_INT128__)
 			const uint64_t q = (uint64_t) (((unsigned __int128) u_hi << 64) / d);
 		#else
 			/* Implementation based on code from Hacker's delight */
