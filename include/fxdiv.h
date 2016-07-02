@@ -146,8 +146,7 @@ static inline struct fxdiv_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 			uint32_t q;
 			__asm__("DIVL %[d]"
 				: "=a" (q)
-				: [d] "r" (d), "a" (0), "d" (u_hi)
-				: "edx");
+				: [d] "r" (d), "a" (0), "d" (u_hi));
 		#else
 			const uint32_t q = ((uint64_t) u_hi << 32) / d;
 		#endif
@@ -240,8 +239,7 @@ static inline struct fxdiv_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 			uint64_t q;
 			__asm__("DIVQ %[d]"
 				: "=a" (q)
-				: [d] "r" (d), "a" (UINT64_C(0)), "d" (u_hi)
-				: "rdx");
+				: [d] "r" (d), "a" (UINT64_C(0)), "d" (u_hi));
 		#else
 			/* Implementation based on code from Hacker's delight */
 
