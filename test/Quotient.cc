@@ -60,11 +60,11 @@ TEST(uint32_t, divide_by_n_minus_1) {
 
 TEST(uint32_t, divide_by_power_of_2) {
 	const uint32_t step = UINT32_C(25183);
-	for (uint32_t n = 0; n <= UINT32_MAX - step + 1; n += step) {
-		for (uint32_t p = 0; p < 32; p += 1) {
-			EXPECT_EQ(n >> p,
-				fxdiv_quotient_uint32_t(n,
-					fxdiv_init_uint32_t(UINT32_C(1) << p)));
+	for (uint32_t p = 0; p < 32; p += 1) {
+		const fxdiv_divisor_uint32_t divisor =
+			fxdiv_init_uint32_t(UINT32_C(1) << p);
+		for (uint32_t n = 0; n <= UINT32_MAX - step + 1; n += step) {
+			EXPECT_EQ(n >> p, fxdiv_quotient_uint32_t(n, divisor));
 		}
 	}
 }
@@ -138,11 +138,11 @@ TEST(uint64_t, divide_by_n_minus_1) {
 
 TEST(uint64_t, divide_by_power_of_2) {
 	const uint64_t step = UINT64_C(93400375993241);
-	for (uint64_t n = 0; n <= UINT64_MAX - step + 1; n += step) {
-		for (uint64_t p = 0; p < 32; p += 1) {
-			EXPECT_EQ(n >> p,
-				fxdiv_quotient_uint64_t(n,
-					fxdiv_init_uint64_t(UINT64_C(1) << p)));
+	for (uint64_t p = 0; p < 64; p += 1) {
+		const fxdiv_divisor_uint64_t divisor =
+			fxdiv_init_uint64_t(UINT64_C(1) << p);
+		for (uint64_t n = 0; n <= UINT64_MAX - step + 1; n += step) {
+			EXPECT_EQ(n >> p, fxdiv_quotient_uint64_t(n, divisor));
 		}
 	}
 }
