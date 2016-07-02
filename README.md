@@ -25,7 +25,8 @@ void divide_array_c(size_t length, uint32_t array[], uint32_t divisor) {
 
 /* Division of array by a constant: implementation with FXdiv */
 void divide_array_fxdiv(size_t length, uint32_t array[], uint32_t divisor) {
-  const struct fxdiv_uint32_t precomputed_divisor = fxdiv_init_uint32_t(divisor);
+  const struct fxdiv_divisor_uint32_t precomputed_divisor =
+    fxdiv_init_uint32_t(divisor);
   for (size_t i = 0; i < length; i++) {
     array[i] = fxdiv_quotient_uint32_t(array[i], precomputed_divisor);
   }
