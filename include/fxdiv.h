@@ -121,14 +121,20 @@ static inline struct fxdiv_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 		result.s2 = 0;
 	} else {
 		#if defined(__OPENCL_VERSION__)
+			const uint32_t nlz_d = clz(d);
 			const uint32_t l_minus_1 = 63 - clz(d - 1);
 		#elif defined(__CUDA_ARCH__)
+			const uint32_t nlz_d = __clzll((long long) d);
 			const uint32_t l_minus_1 = 63 - __clzll((long long) (d - 1));
 		#elif defined(_MSC_VER) && defined(_M_X64)
 			unsigned long l_minus_1;
 			_BitScanReverse64(&l_minus_1, (unsigned __int64) (d - 1));
+			unsigned long bsr_d;
+			_BitScanReverse64(&bsr_d, (unsigned __int64) d);
+			const uint32_t nlz_d = bsr_d ^ 0x3F;
 		#elif defined(_MSC_VER) && defined(_M_IX86)
 			const uint64_t d_minus_1 = d - 1;
+			const uint8_t d_is_power_of_2 = (d & d_minus_1) == 0;
 			unsigned long l_minus_1;
 			if ((uint32_t) (d_minus_1 >> 32) == 0) {
 				_BitScanReverse(&l_minus_1, (unsigned long) d_minus_1);
@@ -136,21 +142,55 @@ static inline struct fxdiv_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 				_BitScanReverse(&l_minus_1, (unsigned long) (uint32_t) (d_minus_1 >> 32));
 				l_minus_1 += 32;
 			}
+			const uint32_t nlz_d = ((uint8_t) l_minus_1 ^ UINT8_C(0x3F)) - d_is_power_of_2;
 		#else
 			const uint32_t l_minus_1 = 63 - __builtin_clzll(d - 1);
+			const uint32_t nlz_d = __builtin_clzll(d);
 		#endif
-		const uint64_t q_hi = (UINT64_C(2) << (uint32_t) l_minus_1) - d;
+		uint64_t u_hi = (UINT64_C(2) << (uint32_t) l_minus_1) - d;
+
+		/* Division of 128-bit number q_hi:UINT64_C(0) by 64-bit number d, 64-bit quotient output q */
 		#if defined(__GNUC__) && (defined(__x86_64__) || defined(__aarch64__) || defined(__ppc64__))
-			const unsigned __int128 q = (unsigned __int128) q_hi << 64;
-			result.m = (uint64_t) (q / d) + UINT64_C(1);
+			const uint64_t q = (uint64_t) (((unsigned __int128) u_hi << 64) / d);
 		#else
-			// TODO: generic implementation
-			#if defined(_MSC_VER)
-				#pragma message("fxdiv_init_uint64_t is not implemented for the platform")
-			#else
-				#warning "fxdiv_init_uint64_t is not implemented for the platform"
-			#endif
+			/* Implementation based on code from Hacker's delight */
+
+			/* Normalize divisor and shift divident left */
+			d <<= nlz_d;
+			u_hi <<= nlz_d;
+			/* Break divisor up into two 32-bit digits */
+			const uint64_t d_hi = (uint32_t) (d >> 32);
+			const uint32_t d_lo = (uint32_t) d;
+
+			/* Compute the first quotient digit, q1 */
+			uint64_t q1 = u_hi / d_hi;
+			uint64_t r1 = u_hi - q1 * d_hi;
+
+			while ((q1 >> 32) != 0 || fxdiv_mulext_uint32_t((uint32_t) q1, d_lo) > (r1 << 32)) {
+				q1 -= 1;
+				r1 += d_hi;
+				if ((r1 >> 32) != 0) {
+					break;
+				}
+			}
+
+			/* Multiply and subtract. */
+			u_hi = (u_hi << 32) - q1 * d;
+
+			/* Compute the second quotient digit, q0 */
+			uint64_t q0 = u_hi / d_hi;
+			uint64_t r0 = u_hi - q0 * d_hi;
+
+			while ((q0 >> 32) != 0 || fxdiv_mulext_uint32_t((uint32_t) q0, d_lo) > (r0 << 32)) {
+				q0 -= 1;
+				r0 += d_hi;
+				if ((r0 >> 32) != 0) {
+					break;
+				}
+			}
+			const uint64_t q = (q1 << 32) | (uint32_t) q0;
 		#endif
+		result.m = q + UINT64_C(1);
 		result.s1 = 1;
 		result.s2 = (uint8_t) l_minus_1;
 	}
