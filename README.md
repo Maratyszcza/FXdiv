@@ -36,14 +36,14 @@ void divide_array_fxdiv(size_t length, uint32_t array[], uint32_t divisor) {
 
 Project is in alpha stage. API is unstable. Currently working features:
 
-| Platform        | uint32_t | uint64_t      | size_t        |
-| --------------- |:--------:|:-------------:|:-------------:|
-| x86-64 gcc      | Works    | Works         | Works         |
-| x86-64 MSVC     | Works    | Works         | Works         |
-| x86 gcc         | Works    | Works         | Works         |
-| x86 MSVC        | Works    | Works         | Works         |
-| CUDA            | Untested | Unimplemented | Untested      |
-| OpenCL          | Untested | Unimplemented | Untested      |
+| Platform        | uint32_t | uint64_t | size_t   |
+| --------------- |:--------:|:--------:|:--------:|
+| x86-64 gcc      | Works    | Works    | Works    |
+| x86-64 MSVC     | Works    | Works    | Works    |
+| x86 gcc         | Works    | Works    | Works    |
+| x86 MSVC        | Works    | Works    | Works    |
+| CUDA            | Untested | Untested | Untested |
+| OpenCL          | Untested | Untested | Untested |
 
 ## References
 
