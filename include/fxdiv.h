@@ -15,7 +15,7 @@
 #endif
 
 static inline uint64_t fxdiv_mulext_uint32_t(uint32_t a, uint32_t b) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && defined(_M_IX86)
 	return (uint64_t) __emulu((unsigned int) a, (unsigned int) b);
 #else
 	return (uint64_t) a * (uint64_t) b;
@@ -27,8 +27,10 @@ static inline uint32_t fxdiv_mulhi_uint32_t(uint32_t a, uint32_t b) {
 	return mul_hi(a, b);
 #elif defined(__CUDA_ARCH__)
 	return (uint32_t) __umulhi((unsigned int) a, (unsigned int) b);
-#elif defined(_MSC_VER)
+#elif defined(_MSC_VER) && defined(_M_IX86)
 	return (uint32_t) (__emulu((unsigned int) a, (unsigned int) b) >> 32);
+#elif defined(_MSC_VER) && defined(_M_ARM)
+	return (uint32_t) _MulUnsignedHigh((unsigned long) a, (unsigned long) b);
 #else
 	return (uint32_t) (((uint64_t) a * (uint64_t) b) >> 32);
 #endif
