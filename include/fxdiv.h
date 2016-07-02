@@ -103,12 +103,28 @@ static inline struct fxdiv_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 		#elif defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))
 			unsigned long l_minus_1;
 			_BitScanReverse(&l_minus_1, (unsigned long) (d - 1));
+		#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+			uint32_t l_minus_1;
+			__asm__("BSRL %[d_minus_1], %[l_minus_1]"
+				: [l_minus_1] "=r" (l_minus_1)
+				: [d_minus_1] "r" (d - 1));
 		#else
 			const uint32_t l_minus_1 = 31 - __builtin_clz(d - 1);
 		#endif
-		const uint32_t q_hi = (UINT32_C(2) << (uint32_t) l_minus_1) - d;
-		const uint64_t q = (uint64_t) q_hi << 32;
-		result.m = (uint32_t) (q / d) + UINT32_C(1);
+		const uint32_t u_hi = (UINT32_C(2) << (uint32_t) l_minus_1) - d;
+
+		/* Division of 64-bit number u_hi:UINT32_C(0) by 32-bit number d, 32-bit quotient output q */
+		#if defined(__GNUC__) && defined(__i386__)
+			uint32_t q;
+			__asm__("DIVL %[d]"
+				: "=a" (q)
+				: [d] "r" (d), "a" (0), "d" (u_hi)
+				: "edx");
+		#else
+			const uint32_t q = ((uint64_t) u_hi << 32) / d;
+		#endif
+
+		result.m = q + UINT32_C(1);
 		result.s1 = 1;
 		result.s2 = (uint8_t) l_minus_1;
 	}
@@ -145,15 +161,24 @@ static inline struct fxdiv_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 				l_minus_1 += 32;
 			}
 			const uint32_t nlz_d = ((uint8_t) l_minus_1 ^ UINT8_C(0x3F)) - d_is_power_of_2;
+		#elif defined(__GNUC__) && defined(__x86_64__)
+			uint64_t l_minus_1;
+			__asm__("BSRQ %[d_minus_1], %[l_minus_1]"
+				: [l_minus_1] "=r" (l_minus_1)
+				: [d_minus_1] "r" (d - 1));
 		#else
 			const uint32_t l_minus_1 = 63 - __builtin_clzll(d - 1);
 			const uint32_t nlz_d = __builtin_clzll(d);
 		#endif
 		uint64_t u_hi = (UINT64_C(2) << (uint32_t) l_minus_1) - d;
 
-		/* Division of 128-bit number q_hi:UINT64_C(0) by 64-bit number d, 64-bit quotient output q */
-		#if defined(__GNUC__) && defined(__SIZEOF_INT128__)
-			const uint64_t q = (uint64_t) (((unsigned __int128) u_hi << 64) / d);
+		/* Division of 128-bit number u_hi:UINT64_C(0) by 64-bit number d, 64-bit quotient output q */
+		#if defined(__GNUC__) && defined(__x86_64__)
+			uint64_t q;
+			__asm__("DIVQ %[d]"
+				: "=a" (q)
+				: [d] "r" (d), "a" (UINT64_C(0)), "d" (u_hi)
+				: "rdx");
 		#else
 			/* Implementation based on code from Hacker's delight */
 
