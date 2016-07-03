@@ -349,6 +349,21 @@ static inline size_t fxdiv_quotient_size_t(size_t n, const struct fxdiv_divisor_
 #endif
 }
 
+static inline uint32_t fxdiv_round_down_uint32_t(uint32_t n, const struct fxdiv_divisor_uint32_t granularity) {
+	const uint32_t quotient = fxdiv_quotient_uint32_t(n, granularity);
+	return quotient * granularity.value;
+}
+
+static inline uint64_t fxdiv_round_down_uint64_t(uint64_t n, const struct fxdiv_divisor_uint64_t granularity) {
+	const uint64_t quotient = fxdiv_quotient_uint64_t(n, granularity);
+	return quotient * granularity.value;
+}
+
+static inline size_t fxdiv_round_down_size_t(size_t n, const struct fxdiv_divisor_size_t granularity) {
+	const size_t quotient = fxdiv_quotient_size_t(n, granularity);
+	return quotient * granularity.value;
+}
+
 static inline struct fxdiv_result_uint32_t fxdiv_divide_uint32_t(uint32_t n, const struct fxdiv_divisor_uint32_t divisor) {
 	const uint32_t quotient = fxdiv_quotient_uint32_t(n, divisor);
 	const uint32_t remainder = n - quotient * divisor.value;
