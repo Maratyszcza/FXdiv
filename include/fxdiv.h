@@ -205,12 +205,12 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 				l_minus_1 += 32;
 			}
 			const uint32_t nlz_d = ((uint8_t) l_minus_1 ^ UINT8_C(0x3F)) - d_is_power_of_2;
-		#elif defined(__GNUC__) && defined(__x86_64__)
+		#elif defined(__GNUC__) && defined(__x86_64__) && (!defined(__clang__))
 			uint64_t l_minus_1;
 			__asm__("BSRQ %[d_minus_1], %[l_minus_1]"
 				: [l_minus_1] "=r" (l_minus_1)
 				: [d_minus_1] "r" (d - 1));
-		#elif defined(__GNUC__)
+		#elif defined(__GNUC__) && !defined(__clang__)
 			const uint32_t l_minus_1 = 63 - __builtin_clzll(d - 1);
 			const uint32_t nlz_d = __builtin_clzll(d);
 		#else
@@ -252,7 +252,7 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 		uint64_t u_hi = (UINT64_C(2) << (uint32_t) l_minus_1) - d;
 
 		/* Division of 128-bit number u_hi:UINT64_C(0) by 64-bit number d, 64-bit quotient output q */
-		#if defined(__GNUC__) && defined(__x86_64__)
+		#if defined(__GNUC__) && defined(__x86_64__) && !defined(__clang__)
 			uint64_t q;
 			__asm__("DIVQ %[d]"
 				: "=a" (q)
