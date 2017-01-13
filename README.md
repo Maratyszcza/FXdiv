@@ -44,6 +44,7 @@ Project is in alpha stage. API is unstable. Currently working features:
 | x86 gcc         | Works    | Works    | Works    |
 | x86 MSVC        | Works    | Works    | Works    |
 | ARMv7 gcc       | Works    | Works    | Works    |
+| PPC64 gcc       | Works    | Works    | Works    |
 | CUDA            | Untested | Untested | Untested |
 | OpenCL          | Untested | Untested | Untested |
 
