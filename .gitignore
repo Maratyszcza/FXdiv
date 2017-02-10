@@ -1,5 +1,13 @@
+# Ninja files
+build.ninja
+
 # Build objects and artifacts
-build/*
+deps/
+build/
+bin/
+lib/
+*.pyc
+*.pyo
 
 # System files
 .DS_Store
