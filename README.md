@@ -9,7 +9,7 @@ On modern CPUs and GPUs integer division is several times slower than multiplica
 - Header-only library, no installation or build required
 - Compatible with C99, C++, OpenCL, and CUDA
 - Uses platform-specific compiler intrinsics for optimal performance
-- Fully covered with unit tests (Google Test framework)
+- Covered with unit tests and microbenchmarks
 
 ## Example
 
@@ -45,6 +45,8 @@ Project is in alpha stage. API is unstable. Currently working features:
 | x86 MSVC        | Works    | Works    | Works    |
 | ARMv7 gcc       | Works    | Works    | Works    |
 | PPC64 gcc       | Works    | Works    | Works    |
+| PNaCl clang     | Works    | Works    | Works    |
+| Asm.js clang    | Works    | Works    | Works    |
 | CUDA            | Untested | Untested | Untested |
 | OpenCL          | Untested | Untested | Untested |
 

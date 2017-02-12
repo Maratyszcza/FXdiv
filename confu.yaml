@@ -3,3 +3,4 @@ title: division via fixed-point multiplication by inverse
 license: MIT
 deps:
   - name: googletest
+  - name: googlebenchmark

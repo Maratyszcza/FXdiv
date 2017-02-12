@@ -11,9 +11,16 @@ def main(args):
 
     build.export_cpath("include", ["fxdiv.h"])
 
-    with build.options(source_dir="test", deps=[build.deps.googletest]):
-        build.unittest("MultiplyHighTest", build.cxx("MultiplyHigh.cc"))
-        build.unittest("QuotientTest", build.cxx("Quotient.cc"))
+    with build.options(source_dir="test", deps=build.deps.googletest):
+        build.unittest("multiply-high-test", build.cxx("multiply-high.cc"))
+        build.unittest("quotient-test", build.cxx("quotient.cc"))
+
+    with build.options(source_dir="bench", deps=build.deps.googlebenchmark):
+        build.benchmark("init-bench", build.cxx("init.cc"))
+        build.benchmark("multiply-bench", build.cxx("multiply.cc"))
+        build.benchmark("divide-bench", build.cxx("divide.cc"))
+        build.benchmark("quotient-bench", build.cxx("quotient.cc"))
+        build.benchmark("round-down-bench", build.cxx("round-down.cc"))
 
     return build
 
