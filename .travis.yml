@@ -1,0 +1,20 @@
+dist: trusty
+language: c
+compiler: clang
+install:
+ - wget https://raw.githubusercontent.com/Maratyszcza/confu/master/install_deps.sh
+ - bash ./install_deps.sh
+ - export PATH=$HOME/.local/bin:$PATH
+ - pip install --user ninja-syntax pyyaml
+ - pip install --user git+https://github.com/Maratyszcza/confu
+before_script:
+ - confu setup
+ - ./configure.py
+ - ninja
+script:
+ - ninja test
+ - ninja bench
+addons:
+  apt:
+    packages:
+    - python-pip
