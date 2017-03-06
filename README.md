@@ -1,4 +1,9 @@
 # FXdiv
+
+[![BSD (2 clause) License](https://img.shields.io/badge/License-MIT%20License-blue.svg)](https://github.com/Maratyszcza/FXdiv/blob/master/LICENSE)
+[![Build Status](https://img.shields.io/travis/Maratyszcza/FXdiv.svg)](https://travis-ci.org/Maratyszcza/FXdiv)
+
+
 Header-only library for division via fixed-point multiplication by inverse
 
 On modern CPUs and GPUs integer division is several times slower than multiplication. FXdiv implements an algorithm to replace an integer division with a multiplication and two shifts. This algorithm improves performance when an application performs repeated divisions by the same divisor.
