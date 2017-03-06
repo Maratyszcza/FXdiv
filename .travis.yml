@@ -9,6 +9,7 @@ install:
  - install -m 755 /tmp/ninja/ninja $HOME/.local/bin/ninja
  - popd
  - export PATH=$HOME/.local/bin:$PATH
+ - pip install --user six
  - pip install --user git+https://github.com/Maratyszcza/confu
 before_script:
  - confu setup
