@@ -156,14 +156,14 @@ static inline struct fxdiv_divisor_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 				l_minus_1 += 1;
 			}
 		#endif
-		const uint32_t u_hi = (UINT32_C(2) << (uint32_t) l_minus_1) - d;
+		uint32_t u_hi = (UINT32_C(2) << (uint32_t) l_minus_1) - d;
 
 		/* Division of 64-bit number u_hi:UINT32_C(0) by 32-bit number d, 32-bit quotient output q */
 		#if defined(__GNUC__) && defined(__i386__)
 			uint32_t q;
 			__asm__("DIVL %[d]"
-				: "=a" (q)
-				: [d] "r" (d), "a" (0), "d" (u_hi));
+				: "=a" (q), "+d" (u_hi)
+				: [d] "r" (d), "a" (0));
 		#else
 			const uint32_t q = ((uint64_t) u_hi << 32) / d;
 		#endif
@@ -255,8 +255,8 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 		#if defined(__GNUC__) && defined(__x86_64__)
 			uint64_t q;
 			__asm__("DIVQ %[d]"
-				: "=a" (q)
-				: [d] "r" (d), "a" (UINT64_C(0)), "d" (u_hi));
+				: "=a" (q), "+d" (u_hi)
+				: [d] "r" (d), "a" (UINT64_C(0)));
 		#else
 			/* Implementation based on code from Hacker's delight */
 
