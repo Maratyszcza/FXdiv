@@ -6,8 +6,8 @@ INCLUDE(GNUInstallDirs)
 PROJECT(FXdiv LANGUAGES CXX)
 
 # ---[ Options.
-OPTION(FXDIV_BUILD_TESTS "Build C++ unit tests" OFF)
-OPTION(FXDIV_BUILD_BENCHMARKS "Build C++ micro-benchmarks" OFF)
+OPTION(FXDIV_BUILD_TESTS "Build FXdiv unit tests" ON)
+OPTION(FXDIV_BUILD_BENCHMARKS "Build FXdiv micro-benchmarks" ON)
 
 # ---[ CMake options
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
