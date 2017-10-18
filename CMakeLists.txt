@@ -26,17 +26,21 @@ SET(CONFU_DEPENDENCIES_SOURCE_DIR ${CMAKE_SOURCE_DIR}/deps
 SET(CONFU_DEPENDENCIES_BINARY_DIR ${CMAKE_BINARY_DIR}/deps
   CACHE PATH "Confu-style dependencies binary directory")
 
-CONFIGURE_FILE(cmake/DownloadGoogleTest.cmake googletest-download/CMakeLists.txt)
-EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
-  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
-EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" --build .
-  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
+IF(NOT TARGET gtest)
+  CONFIGURE_FILE(cmake/DownloadGoogleTest.cmake googletest-download/CMakeLists.txt)
+  EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
+  EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" --build .
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
+ENDIF()
 
-CONFIGURE_FILE(cmake/DownloadGoogleBenchmark.cmake googlebenchmark-download/CMakeLists.txt)
-EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
-  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googlebenchmark-download")
-EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" --build .
-  WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googlebenchmark-download")
+IF(NOT TARGET benchmark)
+  CONFIGURE_FILE(cmake/DownloadGoogleBenchmark.cmake googlebenchmark-download/CMakeLists.txt)
+  EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googlebenchmark-download")
+  EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" --build .
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googlebenchmark-download")
+ENDIF()
 
 # ---[ FXdiv library
 ADD_LIBRARY(fxdiv INTERFACE)
@@ -45,6 +49,7 @@ TARGET_INCLUDE_DIRECTORIES(fxdiv INTERFACE include)
 INSTALL(FILES include/fxdiv.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 IF(FXDIV_BUILD_TESTS)
+  # ---[ Build google test
   IF(NOT TARGET gtest)
     SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     ADD_SUBDIRECTORY(
