@@ -1,6 +1,6 @@
 # FXdiv
 
-[![BSD (2 clause) License](https://img.shields.io/badge/License-MIT%20License-blue.svg)](https://github.com/Maratyszcza/FXdiv/blob/master/LICENSE)
+[![MIT License](https://img.shields.io/badge/License-MIT%20License-blue.svg)](https://github.com/Maratyszcza/FXdiv/blob/master/LICENSE)
 [![Build Status](https://img.shields.io/travis/Maratyszcza/FXdiv.svg)](https://travis-ci.org/Maratyszcza/FXdiv)
 
 
