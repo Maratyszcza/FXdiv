@@ -16,6 +16,10 @@
 	#include <intrin.h>
 #endif
 
+#ifndef FXDIV_USE_INLINE_ASSEMBLY
+	#define FXDIV_USE_INLINE_ASSEMBLY 1
+#endif
+
 static inline uint64_t fxdiv_mulext_uint32_t(uint32_t a, uint32_t b) {
 #if defined(_MSC_VER) && defined(_M_IX86)
 	return (uint64_t) __emulu((unsigned int) a, (unsigned int) b);
@@ -120,7 +124,7 @@ static inline struct fxdiv_divisor_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 		#elif defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))
 			unsigned long l_minus_1;
 			_BitScanReverse(&l_minus_1, (unsigned long) (d - 1));
-		#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__))
+		#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)) && FXDIV_USE_INLINE_ASSEMBLY
 			uint32_t l_minus_1;
 			__asm__("BSRL %[d_minus_1], %[l_minus_1]"
 				: [l_minus_1] "=r" (l_minus_1)
@@ -159,7 +163,7 @@ static inline struct fxdiv_divisor_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 		uint32_t u_hi = (UINT32_C(2) << (uint32_t) l_minus_1) - d;
 
 		/* Division of 64-bit number u_hi:UINT32_C(0) by 32-bit number d, 32-bit quotient output q */
-		#if defined(__GNUC__) && defined(__i386__)
+		#if defined(__GNUC__) && defined(__i386__) && FXDIV_USE_INLINE_ASSEMBLY
 			uint32_t q;
 			__asm__("DIVL %[d]"
 				: "=a" (q), "+d" (u_hi)
@@ -205,7 +209,7 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 				l_minus_1 += 32;
 			}
 			const uint32_t nlz_d = ((uint8_t) l_minus_1 ^ UINT8_C(0x3F)) - d_is_power_of_2;
-		#elif defined(__GNUC__) && defined(__x86_64__)
+		#elif defined(__GNUC__) && defined(__x86_64__) && FXDIV_USE_INLINE_ASSEMBLY
 			uint64_t l_minus_1;
 			__asm__("BSRQ %[d_minus_1], %[l_minus_1]"
 				: [l_minus_1] "=r" (l_minus_1)
@@ -252,7 +256,7 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 		uint64_t u_hi = (UINT64_C(2) << (uint32_t) l_minus_1) - d;
 
 		/* Division of 128-bit number u_hi:UINT64_C(0) by 64-bit number d, 64-bit quotient output q */
-		#if defined(__GNUC__) && defined(__x86_64__)
+		#if defined(__GNUC__) && defined(__x86_64__) && FXDIV_USE_INLINE_ASSEMBLY
 			uint64_t q;
 			__asm__("DIVQ %[d]"
 				: "=a" (q), "+d" (u_hi)
