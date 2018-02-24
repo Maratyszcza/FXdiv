@@ -15,11 +15,6 @@ IF(FXDIV_BUILD_TESTS)
   ENABLE_TESTING()
 ENDIF()
 
-# ---[ Build flags
-IF(NOT MSVC)
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-ENDIF()
-
 # ---[ Download deps
 SET(CONFU_DEPENDENCIES_SOURCE_DIR ${CMAKE_SOURCE_DIR}/deps
   CACHE PATH "Confu-style dependencies source directory")
