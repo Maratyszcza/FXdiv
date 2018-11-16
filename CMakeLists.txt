@@ -8,7 +8,7 @@ PROJECT(FXdiv C CXX)
 # ---[ Options.
 OPTION(FXDIV_BUILD_TESTS "Build FXdiv unit tests" ON)
 OPTION(FXDIV_BUILD_BENCHMARKS "Build FXdiv micro-benchmarks" ON)
-OPTION(FXDIV_USE_INLINE_ASSEMBLY "Allow use of inline assembly in FXdiv" ON)
+OPTION(FXDIV_USE_INLINE_ASSEMBLY "Allow use of inline assembly in FXdiv" OFF)
 
 # ---[ CMake options
 IF(FXDIV_BUILD_TESTS)
