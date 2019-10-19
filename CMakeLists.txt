@@ -6,9 +6,14 @@ INCLUDE(GNUInstallDirs)
 PROJECT(FXdiv C CXX)
 
 # ---[ Options.
-OPTION(FXDIV_BUILD_TESTS "Build FXdiv unit tests" ON)
-OPTION(FXDIV_BUILD_BENCHMARKS "Build FXdiv micro-benchmarks" ON)
 OPTION(FXDIV_USE_INLINE_ASSEMBLY "Allow use of inline assembly in FXdiv" OFF)
+IF("${CMAKE_SOURCE_DIR}" STREQUAL "${PROJECT_SOURCE_DIR}")
+  OPTION(FXDIV_BUILD_TESTS "Build FXdiv unit tests" ON)
+  OPTION(FXDIV_BUILD_BENCHMARKS "Build FXdiv micro-benchmarks" ON)
+ELSE()
+  SET(FXDIV_BUILD_TESTS OFF CACHE BOOL "Build FXdiv unit tests")
+  SET(FXDIV_BUILD_BENCHMARKS OFF CACHE BOOL "Build FXdiv micro-benchmarks")
+ENDIF()
 
 # ---[ CMake options
 IF(FXDIV_BUILD_TESTS)
