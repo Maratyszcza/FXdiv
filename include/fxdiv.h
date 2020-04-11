@@ -221,8 +221,8 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 			/* Based on Algorithm 2 from Hacker's delight */
 			const uint64_t d_minus_1 = d - 1;
 			const uint32_t d_is_power_of_2 = (d & d_minus_1) == 0;
-			uint64_t l_minus_1 = 0;
-			uint32_t x = d_minus_1;
+			uint32_t l_minus_1 = 0;
+			uint32_t x = (uint32_t) d_minus_1;
 			uint32_t y = d_minus_1 >> 32;
 			if (y != 0) {
 				l_minus_1 += 32;
