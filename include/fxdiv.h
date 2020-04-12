@@ -14,6 +14,9 @@
 
 #if defined(_MSC_VER)
 	#include <intrin.h>
+	#if defined(_M_IX86) || defined(_M_X64)
+		#include <immintrin.h>
+	#endif
 #endif
 
 #ifndef FXDIV_USE_INLINE_ASSEMBLY
@@ -168,6 +171,9 @@ static inline struct fxdiv_divisor_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 			__asm__("DIVL %[d]"
 				: "=a" (q), "+d" (u_hi)
 				: [d] "r" (d), "a" (0));
+		#elif (defined(_MSC_VER) && _MSC_VER >= 1920) && (defined(_M_IX86) || defined(_M_X64))
+			unsigned int remainder;
+			const uint32_t q = (uint32_t) _udiv64((unsigned __int64) ((uint64_t) u_hi << 32), (unsigned int) d, &remainder);
 		#else
 			const uint32_t q = ((uint64_t) u_hi << 32) / d;
 		#endif
@@ -261,6 +267,9 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 			__asm__("DIVQ %[d]"
 				: "=a" (q), "+d" (u_hi)
 				: [d] "r" (d), "a" (UINT64_C(0)));
+		#elif (defined(_MSC_VER) && _MSC_VER >= 1920) && defined(_M_X64)
+			unsigned __int64 remainder;
+			const uint64_t q = (uint64_t) _udiv128((unsigned __int64) u_hi, 0, (unsigned __int64) d, &remainder);
 		#else
 			/* Implementation based on code from Hacker's delight */
 
