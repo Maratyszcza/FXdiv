@@ -20,7 +20,7 @@
 #endif
 
 #ifndef FXDIV_USE_INLINE_ASSEMBLY
-	#define FXDIV_USE_INLINE_ASSEMBLY 1
+	#define FXDIV_USE_INLINE_ASSEMBLY 0
 #endif
 
 static inline uint64_t fxdiv_mulext_uint32_t(uint32_t a, uint32_t b) {
