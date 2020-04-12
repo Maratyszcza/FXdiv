@@ -40,20 +40,30 @@ void divide_array_fxdiv(size_t length, uint32_t array[], uint32_t divisor) {
 
 ## Status
 
-Project is in alpha stage. API is unstable. Currently working features:
+Currently working features:
 
 | Platform        | uint32_t | uint64_t | size_t   |
 | --------------- |:--------:|:--------:|:--------:|
 | x86-64 gcc      | Works    | Works    | Works    |
+| x86-64 clang    | Works    | Works    | Works    |
 | x86-64 MSVC     | Works    | Works    | Works    |
 | x86 gcc         | Works    | Works    | Works    |
+| x86 clang       | Works    | Works    | Works    |
 | x86 MSVC        | Works    | Works    | Works    |
 | ARMv7 gcc       | Works    | Works    | Works    |
+| ARMv7 clang     | Works    | Works    | Works    |
+| ARMv7 MSVC*     | Compiles | Compiles | Compiles |
+| ARM64 gcc       | Works    | Works    | Works    |
+| ARM64 clang     | Works    | Works    | Works    |
+| ARM64 MSVC*     | Compiles | Compiles | Compiles |
 | PPC64 gcc       | Works    | Works    | Works    |
-| PNaCl clang     | Works    | Works    | Works    |
+| WAsm clang      | Works    | Works    | Works    |
 | Asm.js clang    | Works    | Works    | Works    |
+| PNaCl clang     | Works    | Works    | Works    |
 | CUDA            | Untested | Untested | Untested |
 | OpenCL          | Untested | Untested | Untested |
+
+*ARMv7 and ARM64 builds with MSVC are presumed to work, but were only verified to compile successfully
 
 ## References
 
