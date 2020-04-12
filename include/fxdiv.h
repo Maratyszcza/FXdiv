@@ -131,7 +131,8 @@ static inline struct fxdiv_divisor_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 			uint32_t l_minus_1;
 			__asm__("BSRL %[d_minus_1], %[l_minus_1]"
 				: [l_minus_1] "=r" (l_minus_1)
-				: [d_minus_1] "r" (d - 1));
+				: [d_minus_1] "r" (d - 1)
+				: "cc");
 		#elif defined(__GNUC__)
 			const uint32_t l_minus_1 = 31 - __builtin_clz(d - 1);
 		#else
@@ -170,7 +171,8 @@ static inline struct fxdiv_divisor_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 			uint32_t q;
 			__asm__("DIVL %[d]"
 				: "=a" (q), "+d" (u_hi)
-				: [d] "r" (d), "a" (0));
+				: [d] "r" (d), "a" (0)
+				: "cc");
 		#elif (defined(_MSC_VER) && _MSC_VER >= 1920) && (defined(_M_IX86) || defined(_M_X64))
 			unsigned int remainder;
 			const uint32_t q = (uint32_t) _udiv64((unsigned __int64) ((uint64_t) u_hi << 32), (unsigned int) d, &remainder);
@@ -219,7 +221,8 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 			uint64_t l_minus_1;
 			__asm__("BSRQ %[d_minus_1], %[l_minus_1]"
 				: [l_minus_1] "=r" (l_minus_1)
-				: [d_minus_1] "r" (d - 1));
+				: [d_minus_1] "r" (d - 1)
+				: "cc");
 		#elif defined(__GNUC__)
 			const uint32_t l_minus_1 = 63 - __builtin_clzll(d - 1);
 			const uint32_t nlz_d = __builtin_clzll(d);
@@ -266,7 +269,8 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 			uint64_t q;
 			__asm__("DIVQ %[d]"
 				: "=a" (q), "+d" (u_hi)
-				: [d] "r" (d), "a" (UINT64_C(0)));
+				: [d] "r" (d), "a" (UINT64_C(0))
+				: "cc");
 		#elif 0 && defined(__GNUC__) && defined(__SIZEOF_INT128__)
 			/* GCC, Clang, and Intel Compiler fail to inline optimized implementation and call into support library for 128-bit division */
 			const uint64_t q = (uint64_t) (((unsigned __int128) u_hi << 64) / ((unsigned __int128) d));
