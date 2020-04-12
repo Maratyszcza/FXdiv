@@ -1,6 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8.12 FATAL_ERROR)
-
-INCLUDE(GNUInstallDirs)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.5 FATAL_ERROR)
 
 # ---[ Project
 PROJECT(FXdiv C CXX)
@@ -16,45 +14,39 @@ ELSE()
 ENDIF()
 
 # ---[ CMake options
+INCLUDE(GNUInstallDirs)
+
 IF(FXDIV_BUILD_TESTS)
   ENABLE_TESTING()
 ENDIF()
 
 # ---[ Download deps
-SET(CONFU_DEPENDENCIES_SOURCE_DIR ${CMAKE_SOURCE_DIR}/deps
-  CACHE PATH "Confu-style dependencies source directory")
-SET(CONFU_DEPENDENCIES_BINARY_DIR ${CMAKE_BINARY_DIR}/deps
-  CACHE PATH "Confu-style dependencies binary directory")
-
 IF(FXDIV_BUILD_TESTS AND NOT DEFINED GOOGLETEST_SOURCE_DIR)
-  MESSAGE(STATUS "Downloading Google Test to ${CONFU_DEPENDENCIES_SOURCE_DIR}/googletest (define GOOGLETEST_SOURCE_DIR to avoid it)")
-  CONFIGURE_FILE(cmake/DownloadGoogleTest.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/googletest-download/CMakeLists.txt")
+  MESSAGE(STATUS "Downloading Google Test to ${CMAKE_BINARY_DIR}/googletest-source (define GOOGLETEST_SOURCE_DIR to avoid it)")
+  CONFIGURE_FILE(cmake/DownloadGoogleTest.cmake "${CMAKE_BINARY_DIR}/googletest-download/CMakeLists.txt")
   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
-    WORKING_DIRECTORY "${CONFU_DEPENDENCIES_BINARY_DIR}/googletest-download")
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" --build .
-    WORKING_DIRECTORY "${CONFU_DEPENDENCIES_BINARY_DIR}/googletest-download")
-  SET(GOOGLETEST_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/googletest" CACHE STRING "Google Test source directory")
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googletest-download")
+  SET(GOOGLETEST_SOURCE_DIR "${CMAKE_BINARY_DIR}/googletest-source" CACHE STRING "Google Test source directory")
 ENDIF()
 
 IF(FXDIV_BUILD_BENCHMARKS AND NOT DEFINED GOOGLEBENCHMARK_SOURCE_DIR)
-  MESSAGE(STATUS "Downloading Google Benchmark to ${CONFU_DEPENDENCIES_SOURCE_DIR}/googlebenchmark (define GOOGLEBENCHMARK_SOURCE_DIR to avoid it)")
-  CONFIGURE_FILE(cmake/DownloadGoogleBenchmark.cmake "${CONFU_DEPENDENCIES_BINARY_DIR}/googlebenchmark-download/CMakeLists.txt")
+  MESSAGE(STATUS "Downloading Google Benchmark to ${CMAKE_BINARY_DIR}/googlebenchmark-source (define GOOGLEBENCHMARK_SOURCE_DIR to avoid it)")
+  CONFIGURE_FILE(cmake/DownloadGoogleBenchmark.cmake "${CMAKE_BINARY_DIR}/googlebenchmark-download/CMakeLists.txt")
   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" -G "${CMAKE_GENERATOR}" .
-    WORKING_DIRECTORY "${CONFU_DEPENDENCIES_BINARY_DIR}/googlebenchmark-download")
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googlebenchmark-download")
   EXECUTE_PROCESS(COMMAND "${CMAKE_COMMAND}" --build .
-    WORKING_DIRECTORY "${CONFU_DEPENDENCIES_BINARY_DIR}/googlebenchmark-download")
-  SET(GOOGLEBENCHMARK_SOURCE_DIR "${CONFU_DEPENDENCIES_SOURCE_DIR}/googlebenchmark" CACHE STRING "Google Benchmark source directory")
+    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/googlebenchmark-download")
+  SET(GOOGLEBENCHMARK_SOURCE_DIR "${CMAKE_BINARY_DIR}/googlebenchmark-source" CACHE STRING "Google Benchmark source directory")
 ENDIF()
 
 # ---[ FXdiv library
-IF(${CMAKE_VERSION} VERSION_LESS "3.0")
-  ADD_LIBRARY(fxdiv STATIC include/fxdiv.h)
-  SET_TARGET_PROPERTIES(fxdiv PROPERTIES LINKER_LANGUAGE C)
-ELSE()
-  ADD_LIBRARY(fxdiv INTERFACE)
-ENDIF()
+ADD_LIBRARY(fxdiv INTERFACE)
 TARGET_INCLUDE_DIRECTORIES(fxdiv INTERFACE include)
-IF(NOT FXDIV_USE_INLINE_ASSEMBLY)
+IF(FXDIV_USE_INLINE_ASSEMBLY)
+  TARGET_COMPILE_DEFINITIONS(fxdiv INTERFACE FXDIV_USE_INLINE_ASSEMBLY=1)
+ELSE()
   TARGET_COMPILE_DEFINITIONS(fxdiv INTERFACE FXDIV_USE_INLINE_ASSEMBLY=0)
 ENDIF()
 
@@ -66,14 +58,20 @@ IF(FXDIV_BUILD_TESTS)
     SET(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
     ADD_SUBDIRECTORY(
       "${GOOGLETEST_SOURCE_DIR}"
-      "${CONFU_DEPENDENCIES_BINARY_DIR}/googletest")
+      "${CMAKE_BINARY_DIR}/googletest")
   ENDIF()
 
   ADD_EXECUTABLE(multiply-high-test test/multiply-high.cc)
+  SET_TARGET_PROPERTIES(multiply-high-test PROPERTIES
+    CXX_STANDARD 11
+    CXX_EXTENSIONS YES)
   TARGET_LINK_LIBRARIES(multiply-high-test fxdiv gtest gtest_main)
   ADD_TEST(multiply-high multiply-high-test)
 
   ADD_EXECUTABLE(quotient-test test/quotient.cc)
+  SET_TARGET_PROPERTIES(quotient-test PROPERTIES
+    CXX_STANDARD 11
+    CXX_EXTENSIONS YES)
   TARGET_LINK_LIBRARIES(quotient-test fxdiv gtest gtest_main)
   ADD_TEST(quotient quotient-test)
 ENDIF()
@@ -84,21 +82,36 @@ IF(FXDIV_BUILD_BENCHMARKS)
     SET(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
     ADD_SUBDIRECTORY(
       "${GOOGLEBENCHMARK_SOURCE_DIR}"
-      "${CONFU_DEPENDENCIES_BINARY_DIR}/googlebenchmark")
+      "${CMAKE_BINARY_DIR}/googlebenchmark")
   ENDIF()
 
   ADD_EXECUTABLE(init-bench bench/init.cc)
+  SET_TARGET_PROPERTIES(init-bench PROPERTIES
+    CXX_STANDARD 11
+    CXX_EXTENSIONS YES)
   TARGET_LINK_LIBRARIES(init-bench fxdiv benchmark)
 
   ADD_EXECUTABLE(multiply-bench bench/multiply.cc)
+  SET_TARGET_PROPERTIES(multiply-bench PROPERTIES
+    CXX_STANDARD 11
+    CXX_EXTENSIONS YES)
   TARGET_LINK_LIBRARIES(multiply-bench fxdiv benchmark)
 
   ADD_EXECUTABLE(divide-bench bench/divide.cc)
+  SET_TARGET_PROPERTIES(divide-bench PROPERTIES
+    CXX_STANDARD 11
+    CXX_EXTENSIONS YES)
   TARGET_LINK_LIBRARIES(divide-bench fxdiv benchmark)
 
   ADD_EXECUTABLE(quotient-bench bench/quotient.cc)
+  SET_TARGET_PROPERTIES(quotient-bench PROPERTIES
+    CXX_STANDARD 11
+    CXX_EXTENSIONS YES)
   TARGET_LINK_LIBRARIES(quotient-bench fxdiv benchmark)
 
   ADD_EXECUTABLE(round-down-bench bench/round-down.cc)
+  SET_TARGET_PROPERTIES(round-down-bench PROPERTIES
+    CXX_STANDARD 11
+    CXX_EXTENSIONS YES)
   TARGET_LINK_LIBRARIES(round-down-bench fxdiv benchmark)
 ENDIF()
