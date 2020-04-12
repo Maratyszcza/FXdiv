@@ -121,7 +121,7 @@ static inline struct fxdiv_divisor_uint32_t fxdiv_init_uint32_t(uint32_t d) {
 			const uint32_t l_minus_1 = 31 - clz(d - 1);
 		#elif defined(__CUDA_ARCH__)
 			const uint32_t l_minus_1 = 31 - __clz((int) (d - 1));
-		#elif defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64))
+		#elif defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_X64) || defined(_M_ARM) || defined(_M_ARM64))
 			unsigned long l_minus_1;
 			_BitScanReverse(&l_minus_1, (unsigned long) (d - 1));
 		#elif defined(__GNUC__) && (defined(__i386__) || defined(__x86_64__)) && FXDIV_USE_INLINE_ASSEMBLY
@@ -192,13 +192,13 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 		#elif defined(__CUDA_ARCH__)
 			const uint32_t nlz_d = __clzll((long long) d);
 			const uint32_t l_minus_1 = 63 - __clzll((long long) (d - 1));
-		#elif defined(_MSC_VER) && defined(_M_X64)
+		#elif defined(_MSC_VER) && (defined(_M_X64) || defined(_M_ARM64))
 			unsigned long l_minus_1;
 			_BitScanReverse64(&l_minus_1, (unsigned __int64) (d - 1));
 			unsigned long bsr_d;
 			_BitScanReverse64(&bsr_d, (unsigned __int64) d);
 			const uint32_t nlz_d = bsr_d ^ 0x3F;
-		#elif defined(_MSC_VER) && defined(_M_IX86)
+		#elif defined(_MSC_VER) && (defined(_M_IX86) || defined(_M_ARM))
 			const uint64_t d_minus_1 = d - 1;
 			const uint8_t d_is_power_of_2 = (d & d_minus_1) == 0;
 			unsigned long l_minus_1;
