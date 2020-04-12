@@ -267,6 +267,9 @@ static inline struct fxdiv_divisor_uint64_t fxdiv_init_uint64_t(uint64_t d) {
 			__asm__("DIVQ %[d]"
 				: "=a" (q), "+d" (u_hi)
 				: [d] "r" (d), "a" (UINT64_C(0)));
+		#elif 0 && defined(__GNUC__) && defined(__SIZEOF_INT128__)
+			/* GCC, Clang, and Intel Compiler fail to inline optimized implementation and call into support library for 128-bit division */
+			const uint64_t q = (uint64_t) (((unsigned __int128) u_hi << 64) / ((unsigned __int128) d));
 		#elif (defined(_MSC_VER) && _MSC_VER >= 1920) && defined(_M_X64)
 			unsigned __int64 remainder;
 			const uint64_t q = (uint64_t) _udiv128((unsigned __int64) u_hi, 0, (unsigned __int64) d, &remainder);
